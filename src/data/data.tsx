@@ -68,3 +68,38 @@ export const paths = [
   },
 ];
 
+// ================= FLOOR MAPS =================
+export const floorMaps = [
+  {
+    id: 1,
+    buildingId: 1,
+    floor: "1st Floor",
+    image: "/maps/mainblock_floor1.png"
+  },
+  {
+    id: 2,
+    buildingId: 1,
+    floor: "2nd Floor",
+    image: "/maps/mainblock_floor2.png"
+  },
+  {
+    id: 3,
+    buildingId: 2,
+    floor: "1st Floor",
+    image: "/maps/itblock_floor1.png"
+  }
+];
+
+// ================= BUILDINGS =================
+export const buildings = [
+  {
+    id: 1,
+    name: "Main Block",
+    entrances: [
+      { id: 1, name: "North Gate", latitude: 11.3205, longitude: 75.9338 },
+      { id: 2, name: "South Gate", latitude: 11.3212, longitude: 75.9345 }
+    ]
+  }
+];
+
+
