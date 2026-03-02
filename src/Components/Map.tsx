@@ -1,6 +1,7 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import type { LatLngExpression } from 'leaflet';
+import { useEffect } from 'react';
+import 'leaflet/dist/leaflet.css';
 
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -16,25 +17,38 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+function FixMapSize() {
+    const map = useMap();
+
+    useEffect(() => {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 50);
+    }, [map]);
+
+    return null;
+}
+
 const MyMap = () => {
-    const position: LatLngExpression = [11.325, 75.935];
-    const zoomLevel: number = 19;
+    const position: [number, number] = [11.325, 75.935];
 
     return (
-        <MapContainer 
-            center={position} 
-            zoom={zoomLevel} 
-            scrollWheelZoom={true}
-            className='h-full w-full'
+        <MapContainer
+            center={position}
+            zoom={19}
+            maxZoom={22}
+            scrollWheelZoom
+            style={{ height: '100vh', width: '100%' }}
         >
             <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                maxZoom={22}
+                attribution="&copy; OpenStreetMap contributors"
+                keepBuffer={8}
             />
+            <FixMapSize />
             <Marker position={position}>
-                <Popup>
-                    Vite + React + Leaflet <br /> Working perfectly!
-                </Popup>
+                <Popup>Zoom now works correctly 🚀</Popup>
             </Marker>
         </MapContainer>
     );

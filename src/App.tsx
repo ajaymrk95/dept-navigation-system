@@ -1,12 +1,9 @@
 import './index.css'
-import MyMap from './Components/Map';
+import IndoorFloorPlan from './Components/IndoorFloorPlan';
 
 function App() {
     return (
-        <div className="">
-            <h1>My Leaflet Map</h1>
-            <MyMap />
-        </div>
+            <IndoorFloorPlan/>
     );
 }
 
