@@ -1,0 +1,176 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import weibull_min, lognorm, expon, norm
+from scipy.optimize import minimize
+
+# --- 1. DATA ENTRY ---
+# Extracted from the provided Assignment PDF
+# Failures (Censored = 1)
+uncensored = np.array([
+    55, 58, 53, 40, 51, 35, 55, 74, 56, 45, 61, 51, 49, 24, 37, 31, 67, 
+    62, 58, 46, 51, 27, 52, 48, 51, 27, 48, 67, 66, 27, 59, 48, 58, 51, 
+    34, 41, 64, 54, 23
+])
+
+# Suspensions/Right-Censored (Censored = 0)
+censored = np.array([
+    99, 101, 92, 73, 79, 100, 79, 77, 97, 79, 91, 81, 105, 84
+])
+
+# --- 2. FITTING FUNCTIONS (Maximum Likelihood Estimation) ---
+
+def fit_distribution(dist_name, uncensored, censored):
+    """
+    Fits a distribution to right-censored data using MLE.
+    Returns: best_params, log_likelihood, AIC
+    """
+    
+    # Negative Log-Likelihood Function to minimize
+    def neg_log_like(params):
+        # Constraints to keep parameters positive (scale, shape)
+        if np.any(np.array(params) <= 1e-5):
+            return 1e10
+            
+        if dist_name == 'expon':
+            # Param: scale (lambda = 1/scale)
+            scale = params[0]
+            ll = np.sum(expon.logpdf(uncensored, loc=0, scale=scale)) + \
+                 np.sum(expon.logsf(censored, loc=0, scale=scale))
+                 
+        elif dist_name == 'normal':
+            # Params: loc (mean), scale (std)
+            # Note: Normal can have negative loc, but scale must be positive
+            loc, scale = params[0], params[1]
+            ll = np.sum(norm.logpdf(uncensored, loc=loc, scale=scale)) + \
+                 np.sum(norm.logsf(censored, loc=loc, scale=scale))
+                 
+        elif dist_name == 'lognormal':
+            # Params: s (shape/sigma), scale (exp(mu))
+            s, scale = params[0], params[1]
+            ll = np.sum(lognorm.logpdf(uncensored, s=s, loc=0, scale=scale)) + \
+                 np.sum(lognorm.logsf(censored, s=s, loc=0, scale=scale))
+                 
+        elif dist_name == 'weibull':
+            # Params: c (shape/beta), scale (eta)
+            c, scale = params[0], params[1]
+            ll = np.sum(weibull_min.logpdf(uncensored, c=c, loc=0, scale=scale)) + \
+                 np.sum(weibull_min.logsf(censored, c=c, loc=0, scale=scale))
+                 
+        return -ll
+
+    # Initial Guesses
+    if dist_name == 'expon':
+        x0 = [np.mean(uncensored)]
+    elif dist_name == 'normal':
+        x0 = [np.mean(uncensored), np.std(uncensored)]
+    elif dist_name == 'lognormal':
+        x0 = [1.0, np.mean(uncensored)]
+    elif dist_name == 'weibull':
+        x0 = [1.5, np.mean(uncensored)]
+
+    # Optimization
+    res = minimize(neg_log_like, x0, method='Nelder-Mead')
+    
+    k = len(x0) # Number of parameters
+    log_likelihood = -res.fun
+    aic = 2*k - 2*log_likelihood
+    
+    return res.x, log_likelihood, aic
+
+# --- 3. RUN ANALYSIS ---
+
+print("--- RELIABILITY ANALYSIS REPORT ---")
+print(f"Data Points: {len(uncensored)} Failures, {len(censored)} Censored\n")
+
+# Fit all distributions
+results = {}
+for name in ['expon', 'normal', 'lognormal', 'weibull']:
+    params, ll, aic = fit_distribution(name, uncensored, censored)
+    results[name] = {'params': params, 'aic': aic}
+    print(f"Distribution: {name.ljust(10)} | AIC: {aic:.4f} | Params: {np.round(params, 4)}")
+
+# Find Best Fit
+best_dist = min(results, key=lambda x: results[x]['aic'])
+print(f"\n1. Best Fit Distribution: {best_dist.upper()} (Lowest AIC)")
+
+# --- 4. CALCULATIONS FOR BEST FIT ---
+
+params = results[best_dist]['params']
+
+if best_dist == 'weibull':
+    c, scale = params
+    dist_model = weibull_min(c=c, loc=0, scale=scale)
+    mttf = dist_model.mean()
+    print(f"   Parameters: Shape (beta)={c:.4f}, Scale (eta)={scale:.4f}")
+    
+elif best_dist == 'lognormal':
+    s, scale = params
+    dist_model = lognorm(s=s, loc=0, scale=scale)
+    mttf = dist_model.mean()
+    print(f"   Parameters: Shape (sigma)={s:.4f}, Scale (exp(mu))={scale:.4f}")
+
+elif best_dist == 'normal':
+    loc, scale = params
+    dist_model = norm(loc=loc, scale=scale)
+    mttf = dist_model.mean()
+
+elif best_dist == 'expon':
+    scale = params[0]
+    dist_model = expon(loc=0, scale=scale)
+    mttf = dist_model.mean()
+
+print(f"\n2. MTTF (Mean Time To Failure): {mttf:.4f} months")
+
+# Predictions
+t_60 = dist_model.ppf(0.60)
+t_80 = dist_model.ppf(0.80)
+surv_40 = dist_model.sf(40)
+surv_70 = dist_model.sf(70)
+
+print(f"\n4. Predictions:")
+print(f"   - Time at which 60% fail: {t_60:.4f} months")
+print(f"   - Time at which 80% fail: {t_80:.4f} months")
+print(f"   - Proportion surviving past 40 months: {surv_40:.4%}")
+print(f"   - Proportion surviving past 70 months: {surv_70:.4%}")
+
+# --- 5. PLOTTING ---
+print("\n3. Generating Plots...")
+t_plot = np.linspace(0, max(np.concatenate([uncensored, censored])) + 20, 200)
+
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle(f'Reliability Plots based on {best_dist.title()} Fit', fontsize=16)
+
+# PDF
+axes[0, 0].plot(t_plot, dist_model.pdf(t_plot), 'b-', lw=2)
+axes[0, 0].set_title('Probability Density Function (PDF)')
+axes[0, 0].set_xlabel('Time (months)')
+axes[0, 0].set_ylabel('Probability Density')
+axes[0, 0].grid(True, alpha=0.3)
+
+# CDF
+axes[0, 1].plot(t_plot, dist_model.cdf(t_plot), 'r-', lw=2)
+axes[0, 1].set_title('Cumulative Distribution Function (CDF)')
+axes[0, 1].set_xlabel('Time (months)')
+axes[0, 1].set_ylabel('Probability of Failure')
+axes[0, 1].grid(True, alpha=0.3)
+
+# Survival Function
+axes[1, 0].plot(t_plot, dist_model.sf(t_plot), 'g-', lw=2)
+axes[1, 0].set_title('Survival Function (Reliability)')
+axes[1, 0].set_xlabel('Time (months)')
+axes[1, 0].set_ylabel('Probability of Survival')
+axes[1, 0].grid(True, alpha=0.3)
+
+# Hazard Function (PDF / Survival)
+# Clip survival to avoid division by zero
+sf_vals = dist_model.sf(t_plot)
+sf_vals[sf_vals < 1e-10] = 1e-10
+hazard = dist_model.pdf(t_plot) / sf_vals
+axes[1, 1].plot(t_plot, hazard, 'k-', lw=2)
+axes[1, 1].set_title('Hazard Function')
+axes[1, 1].set_xlabel('Time (months)')
+axes[1, 1].set_ylabel('Failure Rate')
+axes[1, 1].grid(True, alpha=0.3)
+
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()

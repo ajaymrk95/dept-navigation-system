@@ -1,12 +1,6 @@
 import { useState } from "react";
 
-type DestinationType =
-  | "Faculty"
-  | "Labs"
-  | "Classrooms"
-  | "Halls"
-  | "Offices"
-  | "";
+type DestinationType = "Faculty" | "Labs" | "Classrooms" | "Halls" | "Offices" | "";
 
 interface DestinationItem {
   name: string;
@@ -39,49 +33,35 @@ const HARD_CODED_DESTINATIONS: Record<string, Omit<DestinationItem, "type">[]> =
 };
 
 const DestinationSearch: React.FC = () => {
-  const [destinationType, setDestinationType] =
-    useState<DestinationType>("");
+  const [destinationType, setDestinationType] = useState<DestinationType>("");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DestinationItem[]>([]);
   const [selected, setSelected] = useState<DestinationItem | null>(null);
   const [error, setError] = useState("");
 
-  // 🔍 Dynamic suggestions (with or without type)
   const handleQueryChange = (value: string) => {
     setQuery(value);
     setError("");
     setSelected(null);
 
-    if (!value.trim()) {
-      setSuggestions([]);
-      return;
-    }
+    if (!value.trim()) { setSuggestions([]); return; }
 
     let matches: DestinationItem[] = [];
-
     if (destinationType) {
-      // 🔹 Search within selected type
-      matches =
-        HARD_CODED_DESTINATIONS[destinationType]
-          ?.filter((item) =>
-            item.name.toLowerCase().includes(value.toLowerCase())
-          )
-          .map((item) => ({ ...item, type: destinationType })) || [];
+      matches = HARD_CODED_DESTINATIONS[destinationType]
+        ?.filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
+        .map((item) => ({ ...item, type: destinationType })) || [];
     } else {
-      // 🔹 Search across ALL types
       Object.entries(HARD_CODED_DESTINATIONS).forEach(([type, items]) => {
         items.forEach((item) => {
-          if (item.name.toLowerCase().includes(value.toLowerCase())) {
+          if (item.name.toLowerCase().includes(value.toLowerCase()))
             matches.push({ ...item, type });
-          }
         });
       });
     }
-
     setSuggestions(matches);
   };
 
-  // ✅ Select suggestion
   const handleSelect = (item: DestinationItem) => {
     setSelected(item);
     setQuery(item.name);
@@ -89,106 +69,205 @@ const DestinationSearch: React.FC = () => {
     setSuggestions([]);
   };
 
-  // 🚦 Validate on Find Route
   const handleFindRoute = (): void => {
     setError("");
-
-    if (!query.trim()) {
-      setError("Please enter a destination.");
-      return;
-    }
-
-    if (!selected) {
-      setError(
-        "Invalid destination. Please select a valid option from the suggestions."
-      );
-      return;
-    }
-
-    alert(
-      `Route will be generated to ${selected.name} (${selected.floor}, ${selected.room})`
-    );
+    if (!query.trim()) { setError("Please enter a destination."); return; }
+    if (!selected) { setError("Invalid destination. Please select a valid option from the suggestions."); return; }
+    alert(`Route will be generated to ${selected.name} (${selected.floor}, ${selected.room})`);
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md">
-      <h3 className="text-lg font-medium mb-4">Destination</h3>
+    <>
+      <style>{`
+        .ds-select,
+        .ds-input {
+          width: 100%;
+          padding: 10px 14px;
+          border-radius: 8px;
+          border: 1.5px solid rgba(246, 231, 188, 0.2);
+          background: rgba(246, 231, 188, 0.06);
+          color: #F6E7BC;
+          font-family: 'Outfit', sans-serif;
+          font-size: 14px;
+          font-weight: 300;
+          outline: none;
+          transition: border-color 0.2s ease;
+          appearance: none;
+        }
 
-      <select
-        className="w-full mb-3 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        value={destinationType}
-        onChange={(e) => {
-          setDestinationType(e.target.value as DestinationType);
-          setQuery("");
-          setSuggestions([]);
-          setSelected(null);
-          setError("");
-        }}
-      >
-        <option value="">All destination types</option>
-        <option value="Faculty">Faculty</option>
-        <option value="Labs">Labs</option>
-        <option value="Classrooms">Classrooms</option>
-        <option value="Halls">Halls</option>
-        <option value="Offices">Offices</option>
-      </select>
+        .ds-select option {
+          background: #0B2D72;
+          color: #F6E7BC;
+        }
 
-      <input
-        type="text"
-        placeholder="Search destination..."
-        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        value={query}
-        onChange={(e) => handleQueryChange(e.target.value)}
-      />
+        .ds-select:focus,
+        .ds-input:focus {
+          border-color: #0AC4E0;
+        }
 
-      {/* 🔽 Suggestions */}
+        .ds-input::placeholder {
+          color: rgba(246, 231, 188, 0.35);
+        }
+
+        .ds-field-group {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+
+        .ds-suggestions {
+          list-style: none;
+          border: 1.5px solid rgba(10, 196, 224, 0.25);
+          border-radius: 8px;
+          overflow: hidden;
+          margin-bottom: 12px;
+          max-height: 180px;
+          overflow-y: auto;
+        }
+
+        .ds-suggestion-item {
+          padding: 10px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(246, 231, 188, 0.08);
+          transition: background 0.15s ease;
+        }
+
+        .ds-suggestion-item:last-child {
+          border-bottom: none;
+        }
+
+        .ds-suggestion-item:hover {
+          background: rgba(10, 196, 224, 0.1);
+        }
+
+        .ds-suggestion-name {
+          font-size: 13px;
+          font-weight: 500;
+          color: #F6E7BC;
+          margin-bottom: 2px;
+        }
+
+        .ds-suggestion-meta {
+          font-size: 12px;
+          font-weight: 300;
+          color: rgba(246, 231, 188, 0.45);
+        }
+
+        .ds-no-results {
+          font-size: 13px;
+          color: rgba(246, 231, 188, 0.35);
+          margin-bottom: 12px;
+          font-weight: 300;
+        }
+
+        .ds-find-btn {
+          width: 100%;
+          padding: 11px;
+          border-radius: 8px;
+          border: 1.5px solid #0B2D72;
+          background: #0AC4E0;
+          color: #ffffff;
+          font-family: 'Outfit', sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.22s ease;
+          letter-spacing: 0.02em;
+        }
+
+        .ds-find-btn:hover {
+          background: #0AC4E0;
+          border-color: #0AC4E0;
+          color: #0B2D72;
+        }
+
+        .ds-status-success {
+          margin-top: 12px;
+          padding: 12px 14px;
+          background: rgba(10, 196, 224, 0.08);
+          border: 1px solid rgba(10, 196, 224, 0.25);
+          border-radius: 8px;
+          font-size: 13px;
+        }
+
+        .ds-status-success p:first-child {
+          font-weight: 500;
+          color: #0AC4E0;
+          margin-bottom: 2px;
+        }
+
+        .ds-status-success p:last-child {
+          font-weight: 300;
+          color: rgba(10, 196, 224, 0.7);
+        }
+
+        .ds-status-error {
+          margin-top: 12px;
+          padding: 12px 14px;
+          background: rgba(255, 80, 80, 0.08);
+          border: 1px solid rgba(255, 80, 80, 0.25);
+          border-radius: 8px;
+          font-size: 13px;
+          color: #ff6b6b;
+          font-weight: 300;
+        }
+      `}</style>
+
+      <div className="ds-field-group">
+        <select
+          className="ds-select"
+          value={destinationType}
+          onChange={(e) => {
+            setDestinationType(e.target.value as DestinationType);
+            setQuery(""); setSuggestions([]); setSelected(null); setError("");
+          }}
+        >
+          <option value="">All destination types</option>
+          <option value="Faculty">Faculty</option>
+          <option value="Labs">Labs</option>
+          <option value="Classrooms">Classrooms</option>
+          <option value="Halls">Halls</option>
+          <option value="Offices">Offices</option>
+        </select>
+
+        <input
+          type="text"
+          className="ds-input"
+          placeholder="Search destination..."
+          value={query}
+          onChange={(e) => handleQueryChange(e.target.value)}
+        />
+      </div>
+
       {suggestions.length > 0 && (
-        <ul className="mt-2 border rounded-lg max-h-40 overflow-y-auto bg-white">
+        <ul className="ds-suggestions">
           {suggestions.map((item, index) => (
-            <li
-              key={index}
-              onClick={() => handleSelect(item)}
-              className="px-3 py-2 cursor-pointer hover:bg-gray-100"
-            >
-              <p className="font-medium">{item.name}</p>
-              <p className="text-sm text-gray-500">
-                {item.type} • {item.floor} • {item.room}
-              </p>
+            <li key={index} className="ds-suggestion-item" onClick={() => handleSelect(item)}>
+              <p className="ds-suggestion-name">{item.name}</p>
+              <p className="ds-suggestion-meta">{item.type} · {item.floor} · {item.room}</p>
             </li>
           ))}
         </ul>
       )}
 
       {query && suggestions.length === 0 && !selected && (
-        <p className="mt-2 text-sm text-gray-500">
-          No matching destinations found
-        </p>
+        <p className="ds-no-results">No matching destinations found</p>
       )}
 
-      <button
-        onClick={handleFindRoute}
-        className="w-full mt-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-      >
-        Find Route
+      <button className="ds-find-btn" onClick={handleFindRoute}>
+        Find Route →
       </button>
 
-      {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
-          {error}
-        </div>
-      )}
+      {error && <div className="ds-status-error">⚠ {error}</div>}
 
       {selected && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm">
-          <p className="font-medium text-green-700">
-            Destination Selected
-          </p>
-          <p className="text-green-600">
-            {selected.name} — {selected.floor}, {selected.room}
-          </p>
+        <div className="ds-status-success">
+          <p>✓ Destination Selected</p>
+          <p>{selected.name} — {selected.floor}, {selected.room}</p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

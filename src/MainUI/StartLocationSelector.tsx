@@ -2,37 +2,55 @@ interface StartLocationSelectorProps {
   onUseGPS: () => void;
 }
 
-const StartLocationSelector: React.FC<StartLocationSelectorProps> = ({
-  onUseGPS,
-}) => {
+const StartLocationSelector: React.FC<StartLocationSelectorProps> = ({ onUseGPS }) => {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md mb-6">
-      <h3 className="text-lg font-medium mb-4">Start Location</h3>
+    <>
+      <style>{`
+        .sls-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
 
-      <div className="flex gap-4">
-        <button
-          onClick={onUseGPS}
-          className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
-        >
+        .sls-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 18px;
+          border-radius: 8px;
+          border: 1.5px solid rgba(246, 231, 188, 0.25);
+          background: transparent;
+          color: #F6E7BC;
+          font-family: 'Outfit', sans-serif;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          letter-spacing: 0.02em;
+        }
+
+        .sls-btn:hover {
+          background: #0AC4E0;
+          border-color: #0AC4E0;
+          color: #0B2D72;
+        }
+      `}</style>
+
+      <div className="sls-buttons">
+        <button className="sls-btn" onClick={onUseGPS}>
           📡 Use GPS
         </button>
-
-        <button
-          className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
-        >
+        <button className="sls-btn">
           📷 Scan QR Code
         </button>
-        {/* Manual Location Selector */}
-<button
-  onClick={() =>
-    alert("Manual location selection will be implemented later.")
-  }
-  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
->
-  📍 Manual Location Selector
-</button>
+        <button
+          className="sls-btn"
+          onClick={() => alert("Manual location selection will be implemented later.")}
+        >
+          📍 Manual Location
+        </button>
       </div>
-    </div>
+    </>
   );
 };
 
