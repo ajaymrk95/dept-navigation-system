@@ -18,7 +18,7 @@ export default function RoutePanel({
 
       <div className="bg-[#1a305b] px-6 py-4 rounded-md">
         <h2 className="text-[#e9e4d9] text-xl font-bold">
-          Outdoor Navigation
+          Find Your Location
         </h2>
       </div>
 

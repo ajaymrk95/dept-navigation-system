@@ -14,72 +14,117 @@ export default function MobileLocationSheet({
   onSelectLocation
 }: Props) {
 
+  const sheetRef = useRef<HTMLDivElement>(null)
+
   const screenHeight = window.innerHeight
 
-  const CLOSED = 0
+  const MIN_HEIGHT = 90
   const HALF = screenHeight * 0.45
   const FULL = screenHeight
 
-  const [height, setHeight] = useState(CLOSED)
+  const [height, setHeight] = useState(MIN_HEIGHT)
 
   const startY = useRef(0)
   const startHeight = useRef(0)
 
+  function setSheetHeight(h: number) {
+    if (!sheetRef.current) return
+    sheetRef.current.style.height = `${h}px`
+  }
+
   function openSearch() {
     setHeight(FULL)
+    setSheetHeight(FULL)
   }
 
   function handleSearchFocus() {
     setHeight(FULL)
+    setSheetHeight(FULL)
   }
 
   function handleSelect(location: Location) {
     onSelectLocation(location)
     setHeight(HALF)
+    setSheetHeight(HALF)
   }
 
-  function handlePointerDown(e: React.PointerEvent) {
-    startY.current = e.clientY
-    startHeight.current = height
+  /* ---------- DRAG START ---------- */
 
-    window.addEventListener("pointermove", handlePointerMove)
-    window.addEventListener("pointerup", handlePointerUp)
+  function startDrag(clientY: number) {
+    startY.current = clientY
+    startHeight.current = sheetRef.current?.offsetHeight || MIN_HEIGHT
+
+    window.addEventListener("touchmove", onTouchMove)
+    window.addEventListener("touchend", stopDrag)
+
+    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mouseup", stopDrag)
   }
 
-  function handlePointerMove(e: PointerEvent) {
-    const delta = startY.current - e.clientY
+  function onTouchStart(e: React.TouchEvent) {
+    startDrag(e.touches[0].clientY)
+  }
+
+  function onMouseDown(e: React.MouseEvent) {
+    startDrag(e.clientY)
+  }
+
+  /* ---------- DRAG MOVE ---------- */
+
+  function updateHeight(clientY: number) {
+    const delta = startY.current - clientY
     let newHeight = startHeight.current + delta
 
-    if (newHeight < CLOSED) newHeight = CLOSED
+    if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT
     if (newHeight > FULL) newHeight = FULL
 
-    setHeight(newHeight)
+    setSheetHeight(newHeight)
   }
 
-  function handlePointerUp() {
-    window.removeEventListener("pointermove", handlePointerMove)
-    window.removeEventListener("pointerup", handlePointerUp)
+  function onTouchMove(e: TouchEvent) {
+    updateHeight(e.touches[0].clientY)
+  }
+
+  function onMouseMove(e: MouseEvent) {
+    updateHeight(e.clientY)
+  }
+
+  /* ---------- DRAG END ---------- */
+
+  function stopDrag() {
+    const currentHeight = sheetRef.current?.offsetHeight || MIN_HEIGHT
+    setHeight(currentHeight)
+
+    window.removeEventListener("touchmove", onTouchMove)
+    window.removeEventListener("touchend", stopDrag)
+
+    window.removeEventListener("mousemove", onMouseMove)
+    window.removeEventListener("mouseup", stopDrag)
   }
 
   return (
     <>
-      {height === CLOSED && (
+      {/* Find Location button */}
+      {height <= MIN_HEIGHT && (
         <button
           onClick={openSearch}
-          className="fixed top-4 right-4 z-50 bg-white shadow-md rounded-full px-4 py-2 text-sm font-medium"
+          className="fixed top-4 left-4 z-50 bg-white shadow-md rounded-full px-4 py-2 text-sm font-medium"
         >
           Find Location
         </button>
       )}
 
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl transition-all"
-        style={{ height, maxHeight: "100vh" }}
+        ref={sheetRef}
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl"
+        style={{ height }}
       >
 
+        {/* Drag Handle */}
         <div
-          className="w-12 h-1.5 bg-gray-300 rounded mx-auto mt-3 mb-3 cursor-grab"
-          onPointerDown={handlePointerDown}
+          className="w-16 h-2 bg-gray-300 rounded mx-auto mt-3 mb-4 cursor-grab touch-none"
+          onTouchStart={onTouchStart}
+          onMouseDown={onMouseDown}
         />
 
         <div className="px-4 pb-6 overflow-y-auto h-full">
