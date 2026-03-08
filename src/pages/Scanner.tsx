@@ -17,7 +17,6 @@ function Scanner() {
       { facingMode: "environment" },
       {
         fps: 15,
-        // Remove fixed aspectRatio — let the container define the shape
         qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
           const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
           return { width: size, height: size };
@@ -25,11 +24,24 @@ function Scanner() {
       },
       (decodedText: string) => {
         if (stoppedRef.current) return;
-        console.log("QR scanned:", decodedText);
-        window.open(decodedText, "_blank");
+      
         stoppedRef.current = true;
+      
+        let searchValue = decodedText;
+      
+        try {
+          const parsed = JSON.parse(decodedText);
+      
+          if (parsed.name) {
+            searchValue = parsed.name;
+          }
+      
+        } catch {
+          // QR was not JSON → use raw text
+        }
+      
         scanner.stop().then(() => {
-          navigate("/");
+          navigate("/", { state: { qrData: searchValue } });
         });
       },
       () => {}
@@ -57,12 +69,6 @@ function Scanner() {
       <div
         id="reader"
         style={{
-          /*
-           * On mobile (portrait): go nearly full-width and let height follow.
-           * On desktop: cap at 900px wide with a 16:9 ratio.
-           * The key fix is using min() so the box never overflows the viewport
-           * height, which was causing the tiny-box-at-bottom bug on mobile.
-           */
           width: "min(75vw, 700px)",
           height: "min(calc(min(85vh, 1000px) * 9 / 16), 90vh)",
           overflow: "hidden",
