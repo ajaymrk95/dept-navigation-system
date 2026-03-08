@@ -11,7 +11,7 @@ export function useFloorData(floor: number, building: string) {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const BASE_PATH = `/data/${building}/floor${floor}`;
+    const BASE_PATH = `/geojsons/${building}/floor${floor}`;
 
     useEffect(() => {
         setLoading(true);
