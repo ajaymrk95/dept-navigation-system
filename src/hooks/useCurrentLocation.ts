@@ -19,8 +19,8 @@ export function useCurrentLocation() {
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000
+        maximumAge: 500,
+        timeout: 100
       }
     )
 

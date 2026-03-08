@@ -7,8 +7,6 @@ import { findNearestNode } from "./utils/findNearestNode"
 import { shortestPath } from "./utils/shortestPath"
 import LocateButton from "./components/LocateButton"
 import { useCurrentLocation } from "./hooks/useCurrentLocation"
-
-
 import { distance } from "./utils/distance"
 
 const DEFAULT_CENTER: [number, number] = [11.3210, 75.9346]
@@ -19,22 +17,27 @@ export default function App() {
   const [destination, setDestination] = useState<Location | null>(null)
   const [routeCoords, setRouteCoords] = useState<[number, number][]>([])
   const [distanceText, setDistanceText] = useState("")
+  
+  // State to hold the destination clicked directly from the map pins
+  const [clickedDestination, setClickedDestination] = useState<Location | null>(null)
+  
+  // Controls whether the sidebar is visible on mobile
+  const [isPanelOpen, setIsPanelOpen] = useState(true)
 
   const { location: currentLocation } = useCurrentLocation()
 
   const currentLocationOption: Location | null = currentLocation
-  ? {
-      id: 0, 
-      name: "My Current Location",
-      coords: currentLocation,
-      type: "custom"
-    }
-  : null
+    ? {
+        id: 0, 
+        name: "My Current Location",
+        coords: currentLocation,
+        type: "custom"
+      }
+    : null
 
   const selectableLocations: Location[] = currentLocationOption
-  ? [currentLocationOption, ...locations]
-  : locations
-
+    ? [currentLocationOption, ...locations]
+    : locations
 
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER)
 
@@ -43,7 +46,6 @@ export default function App() {
       .then(r => r.json())
       .then(data => setGraph(buildGraph(data)))
   }, [])
-
 
   function handleRoute(startLoc: Location, endLoc: Location) {
     if (!graph) return
@@ -64,7 +66,6 @@ export default function App() {
       total += distance(coords[i], coords[i + 1])
     }
 
-    console.log(total)
     setDistanceText(
       total < 1
         ? Math.round(total * 1000) + " m"
@@ -73,27 +74,44 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-100">
+    <div className="h-screen w-screen flex bg-slate-100 overflow-hidden font-sans relative">
 
-      <header className="h-16 bg-white shadow flex items-center justify-center font-semibold">
-        Department Navigation System
-      </header>
-
-      <div className="flex-1 relative">
-
+      {/* SIDEBAR: 30% width on Desktop, Full screen slide-over on Mobile */}
+      <div className={`
+        absolute md:relative top-0 left-0 h-full w-full md:w-[30%] md:min-w-[350px]
+        z-[3000] md:z-10
+        transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
+        ${isPanelOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      `}>
         <RoutePanel
           locations={selectableLocations}
           onRouteRequest={handleRoute}
+          onClose={() => setIsPanelOpen(false)} 
+          mapDestination={clickedDestination} // PASSED TO SIDEBAR
         />
+      </div>
 
+      {/* MAP AREA: 70% width on Desktop, Full screen under the drawer on Mobile */}
+      <div className="flex-1 relative h-full w-full">
+        
+        {/* Floating Search button for mobile when panel is hidden */}
+        {!isPanelOpen && (
+          <button 
+            onClick={() => setIsPanelOpen(true)}
+            className="md:hidden absolute top-6 left-6 z-[2000] bg-white text-[#1a305b] px-5 py-3 rounded-full shadow-lg font-semibold border border-[#547792]/20 flex items-center gap-2"
+          >
+            🔍 Search Route
+          </button>
+        )}
+
+        {/* Distance Indicator */}
         <div className="
-  absolute bottom-6 left-1/2 -translate-x-1/2
-  bg-white px-6 py-3 rounded-2xl shadow-xl
-  border text-sm font-medium z-[2000]
-">
-  {distanceText || "Select two locations"}
-</div>
-
+          absolute top-6 right-6 md:top-6 md:left-1/2 md:-translate-x-1/2
+          bg-white px-6 py-3 rounded-full shadow-xl
+          border border-[#547792]/20 text-sm font-bold text-[#1a305b] z-[2000]
+        ">
+          {distanceText || "Select two locations"}
+        </div>
 
         <MapView
           center={center}
@@ -103,6 +121,12 @@ export default function App() {
           graph={graph}
           routeCoords={routeCoords}
           currentLocation={currentLocation}
+          // NEW MAP PROPS HANDLED HERE
+          onSetMapDestination={(loc) => {
+            setClickedDestination(loc)
+            setIsPanelOpen(true) 
+          }}
+         
         />
 
         <LocateButton
