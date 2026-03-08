@@ -1,18 +1,22 @@
-  import { useEffect } from "react"
-  import { useMap } from "react-leaflet"
+import { useEffect } from "react"
+import { useMap } from "react-leaflet"
+import type { Location } from "../data/locations"
 
-  type Props = {
-    center: [number, number]
-  }
+type Props = {
+  location: Location | null
+}
 
-  export default function MapRecenter({ center }: Props) {
-    const map = useMap()
+export default function MapRecenter({ location }: Props) {
+  const map = useMap()
 
-    useEffect(() => {
-      map.setView(center, map.getZoom(), {
-        animate: true
-      })
-    }, [center, map])
+  useEffect(() => {
+    if (!location) return
 
-    return null
-  }
+    map.flyTo(location.coords, 18, {
+      duration: 1.5
+    })
+
+  }, [location, map])
+
+  return null
+}
