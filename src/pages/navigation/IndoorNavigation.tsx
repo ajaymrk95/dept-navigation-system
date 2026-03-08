@@ -1,9 +1,7 @@
-import React from 'react'
+import IndoorMap from "../../components/IndoorMap";
 
 const IndoorNavigation = () => {
-  return (
-    <div>IndoorNavigation</div>
-  )
+    return <IndoorMap/>
 }
 
-export default IndoorNavigation
+export default IndoorNavigation;
