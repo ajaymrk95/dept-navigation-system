@@ -1,80 +1,110 @@
+import { useNavigate } from "react-router-dom"
 import type { Location } from "../data/locations"
 import LocationSearch from "./LocationSearch"
 
 type Props = {
-  locations: Location[]
-  selectedLocation: Location | null
-  onSelectLocation: (location: Location) => void
+locations: Location[]
+selectedLocation: Location | null
+onSelectLocation: (location: Location) => void
 }
 
 export default function RoutePanel({
-  locations,
-  selectedLocation,
-  onSelectLocation
+locations,
+selectedLocation,
+onSelectLocation
 }: Props) {
 
-  return (
-    <div className="h-full w-full flex flex-col bg-[#f5f3ee] border-r border-[#547792]/20 overflow-y-auto p-6 gap-4">
+const navigate = useNavigate()
 
-      <div className="bg-[#1a305b] px-6 py-4 rounded-md">
-        <h2 className="text-[#e9e4d9] text-xl font-bold">
-          Find Your Location
-        </h2>
-      </div>
+return ( <div className="h-full w-full flex flex-col bg-[#1A3263] border-r border-[#547792] p-4">
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <LocationSearch
-          locations={locations}
-          onSelect={onSelectLocation}
-        />
-      </div>
 
-      {selectedLocation && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+  {/* Top content */}
+  <div className="flex flex-col gap-4">
 
-          <div className="h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-            Image Placeholder
-          </div>
+    {/* Search + Filters Container */}
+    {/* <div className="bg-[#547792] rounded-lg shadow-sm p-4"> */}
+      <LocationSearch
+        locations={locations}
+        onSelect={onSelectLocation}
+      />
+    {/* </div> */}
 
-          <div className="p-4 space-y-2">
+    {selectedLocation && (
+      <div className="bg-[#e9e4d9] rounded-xl shadow border border-[#547792]/30 overflow-hidden">
 
-            <h3 className="text-lg font-semibold text-[#1a305b]">
-              {selectedLocation.name}
-            </h3>
-
-            <p className="text-sm text-gray-600">
-              Room: {selectedLocation.room}
-            </p>
-
-            {selectedLocation.floor !== undefined && (
-              <p className="text-sm text-gray-600">
-                Floor {selectedLocation.floor}
-              </p>
-            )}
-
-            {selectedLocation.description && (
-              <p className="text-sm text-gray-700">
-                {selectedLocation.description}
-              </p>
-            )}
-
-            {selectedLocation.tag && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {selectedLocation.tag.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-xs bg-[#e9e4d9] text-[#1a305b] px-2 py-1 rounded-md"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-          </div>
+        <div className="h-48 bg-[#547792]/30 flex items-center justify-center text-[#1a305b]">
+          Image Placeholder
         </div>
-      )}
 
-    </div>
-  )
+        <div className="p-4 space-y-2">
+
+          <h3 className="text-lg font-semibold text-[#1a305b]">
+            {selectedLocation.name}
+          </h3>
+
+          <p className="text-sm text-[#1a305b]/80">
+            Room: {selectedLocation.room}
+          </p>
+
+          {selectedLocation.floor !== undefined && (
+            <p className="text-sm text-[#1a305b]/80">
+              Floor {selectedLocation.floor}
+            </p>
+          )}
+
+          {selectedLocation.description && (
+            <p className="text-sm text-[#1a305b]/80">
+              {selectedLocation.description}
+            </p>
+          )}
+
+          {selectedLocation.tag && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {selectedLocation.tag.map(tag => (
+                <span
+                  key={tag}
+                  className="text-xs bg-[#547792]/20 text-[#1a305b] px-2 py-1 rounded-md"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    )}
+
+  </div>
+
+  {/* Bottom Button */}
+  <div className="mt-auto pt-6">
+
+    <button
+      onClick={() => navigate("/navigate")}
+      className="
+        w-full
+        flex items-center justify-between
+        px-6 py-4
+        rounded-full
+        bg-[#e9e4d9]
+        text-[#1a305b]
+        text-lg
+        font-semibold
+        transition
+        hover:bg-[#f0b35a]
+      "
+    >
+      Start Navigating
+      <span className="text-xl">→</span>
+    </button>
+
+  </div>
+
+</div>
+
+
+)
 }

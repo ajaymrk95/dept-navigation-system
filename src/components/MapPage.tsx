@@ -44,20 +44,6 @@ export default function MapPage() {
       </MapContainer>
 
 
-      {/* DESKTOP TOP RIGHT BUTTONS */}
-
-      <div className="hidden md:flex fixed top-4 right-4 z-[1000] gap-2">
-
-        <button
-          onClick={() => navigate("/navigate")}
-          className="bg-[#1a305b] text-[#e9e4d9] shadow-md rounded-md px-6 py-3 text-base font-semibold hover:opacity-90 transition"
-        >
-          Navigate
-        </button>
-
-      </div>
-
-
       {/* DESKTOP PANEL */}
 
       <div className="hidden md:block absolute left-0 top-0 h-full w-[420px] z-50">
