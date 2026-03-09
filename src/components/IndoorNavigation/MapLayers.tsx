@@ -4,7 +4,7 @@ import type { Feature } from "geojson";
 import type { FloorData } from "../../types/types";
 import { buildingOutlineStyle, getUnitStyle, getPathStyle,} from "../../utils/indoorNavigation/mapStyles";
 import { createPOIIcon } from "../../utils/indoorNavigation/mapIcons";
-import { onEachOutline, onEachUnit, onEachPath, onEachPOI, } from "../../utils/indoorNavigation/mapEventHandlers.ts";
+import { onEachUnit, onEachPath, onEachPOI, } from "../../utils/indoorNavigation/mapEventHandlers.ts";
 
 interface MapLayersProps extends FloorData {
     floor: number;
@@ -28,7 +28,6 @@ export function MapLayers({ buildingOutline, units, paths, pois, floor }: MapLay
                     key={`outline-${floor}`}
                     data={buildingOutline}
                     style={buildingOutlineStyle}
-                    onEachFeature={onEachOutline}
                 />
             )}
 
