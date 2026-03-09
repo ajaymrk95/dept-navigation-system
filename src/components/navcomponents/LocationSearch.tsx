@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { Location } from "../data/locations"
+import type { Location } from "../../data/locations"
 
 type Props = {
   label: string

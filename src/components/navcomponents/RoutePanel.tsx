@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { Location } from "../data/locations"
+import type { Location } from "../../data/locations"
 import LocationSearch from "./LocationSearch"
 
 type Props = {
@@ -55,10 +55,10 @@ export default function RoutePanel({ locations, onRouteRequest, onClose, mapDest
             />
           </div>
 
-          <div className="absolute right-6 top-[34px] z-30">
+          <div className="absolute right-6 top-[42px] z-30">
             <button
               onClick={handleSwap}
-              className="bg-white text-[#547792] p-2.5 rounded-full border border-[#547792]/30 shadow-sm hover:bg-[#fab75a] hover:text-[#1a305b] hover:border-[#fab75a] transition-colors"
+              className="bg-white text-[#547792] p-3.5 rounded-full border border-[#54779]/30 shadow-sm hover:bg-[#fab75a] hover:text-[#1a305b] hover:border-[#fab75a] transition-colors"
               title="Swap locations"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>

@@ -1,8 +1,8 @@
 import "leaflet/dist/leaflet.css"
 
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet"
-import { type Graph } from "../utils/buildGraph"
-import { type Location } from "../data/locations"
+import { type Graph } from "../../utils/buildGraph"
+import { type Location } from "../../data/locations"
 import L from "leaflet"
 import MapRecenter from "./MapRecenter"
 
@@ -92,7 +92,6 @@ function MapView({ center, locations, start, destination, routeCoords, currentLo
           />
         )}
 
-        {/* Start and End use Green Pins */}
         {start && (
           <Marker position={start.coords} icon={greenIcon}>
             <Popup><span className="font-bold text-green-700">Start: {start.name}</span></Popup>
@@ -104,7 +103,6 @@ function MapView({ center, locations, start, destination, routeCoords, currentLo
           </Marker>
         )}
 
-        {/* Current Location uses Red Pin */}
         {currentLocation && (
           <Marker position={currentLocation} icon={redIcon}>
             <Popup><span className="font-bold text-red-600">You are here</span></Popup>
