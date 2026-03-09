@@ -1,73 +1,117 @@
-# React + TypeScript + Vite
+# Atlas 🗺️
+### Campus Navigation System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> ⚠️ **Work in progress** — Atlas is actively being developed. Features and APIs may change.
 
-Currently, two official plugins are available:
+Atlas is a full campus navigation system built for students, staff, and first-time visitors. It provides seamless outdoor-to-indoor navigation — guiding a person from anywhere on campus all the way to a specific room inside a building, with no login or app install required.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## What Atlas Does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+User opens Atlas
+  → Sees the campus map with their live GPS location
+  → Searches for a building or destination
+  → Gets a walking route across campus
+  → Approaches a building → "Switch to Indoor?" prompt appears
+  → Confirms → Indoor floor plan loads
+  → Selects destination room or scans a QR code for their current location
+  → Gets a room-level route to their destination
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 🌍 Outdoor Navigation
+- **Campus map** with all buildings marked and labelled
+- **Real-time GPS location** — the user's position is shown live on the map
+- **Building and place search** — find any building or point of interest by name
+- **Walking routes** — turn-by-turn path between any two outdoor locations
+- **Proximity detection** — as a user approaches a building, a dialog prompts them to switch to indoor navigation
+
+### 🏢 Indoor Navigation
+- **Room-level routing** using Dijkstra's algorithm on a GeoJSON path graph
+- **QR code scanning** — scan a code placed at a physical location to set it as your start point automatically
+- **Multi-floor support** — switch floors using a control embedded inside the map
+- **Floor plan layers** — building outline, rooms, navigation paths, and POIs rendered as stacked GeoJSON layers
+- **Room labels** — centroid labels on every room, colour-coded by category
+- **Interactive popups** — tap any room, path, or POI for details
+
+### 🔁 Outdoor ↔ Indoor Handoff
+- Proximity to a building triggers a **"Switch to Indoor Navigation"** dialog
+- Confirming loads the building's floor plan without leaving the app
+- Users can return to outdoor navigation at any time
+
+### 🔐 Admin Panel
+- Admins log in through a **separate login page**
+- Full control over all map data:
+  - Edit room details (name, number, category, level)
+  - Edit path details (type, navigability)
+  - Manage building information
+  - Add and update points of interest
+- Edit mode is accessible directly on the map — click any feature to edit it inline
+
+### 👤 No Login for Visitors
+Regular users never need to create an account or sign in. Atlas is designed to work immediately for anyone who opens it.
+
+---
+
+## Tech Stack
+
+| Technology | Role |
+|---|---|
+| React | UI framework |
+| TypeScript | Type safety throughout |
+| Leaflet / React-Leaflet | Map rendering, GeoJSON layers, routing display, custom controls |
+| Tailwind CSS | Styling |
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
+
+---
+
+## How Indoor Routing Works
+
+1. `buildGraph` walks every path feature and builds a bidirectional adjacency map keyed by coordinate string (`"lng,lat"`)
+2. A POI name or QR-scanned location is resolved to a graph node via `getPOINode`
+3. `dijkstra` finds the lowest-cost node sequence using Euclidean distance as edge weight
+4. `nodesToLatLngs` converts the result to `[lat, lng]` tuples
+5. A `<Polyline>` renders the route over the floor plan
+
+---
+
+## Roadmap
+
+- [ ] Backend API for persisting admin edits
+- [ ] QR code generation for physical placement inside buildings
+- [ ] Cross-floor stairwell routing
+- [ ] Offline support / PWA
+- [ ] More buildings and floors
+
+---
+
+## Team
+
+| Name | Role | GitHub |
+|---|---|---|
+| Ajay Mahesh Ramakrishnan | Outdoor Navigation |[@ajaymrk95](https://github.com/ajaymrk95) |
+| Niranjan V | QR Code & Search |[@niranjanv2k4](https://github.com/niranjanv2k4) |
+| Lishin V S | Indoor Navigation |[@ellvius](https://github.com/ellvius) |
+| Tarun Nambiar | Designer & Admin Login |[@tarunpradeep](https://github.com/tarunpradeep) |
+| Muhammad Jasil | Admin Functionalities |[@JasiJasil00](https://github.com/JasiJasil00) |
+
+---
