@@ -20,7 +20,7 @@ export const locations: Location[] = [
     coords: [11.320713, 75.933313], 
     type: "connection", 
     category: "outdoor",
-    tag: ["walkway", "central-path"],
+    tag: ["walkway", "central-path", "Outdoor"],
     description: "The main central walkway of the campus connecting major blocks." 
   },
 
@@ -31,7 +31,7 @@ export const locations: Location[] = [
     coords: [11.3222231, 75.9339917], 
     type: "building", 
     category: "outdoor",
-    tag: ["department", "computer-science"],
+    tag: ["department", "computer-science", "Faculty", "Outdoor"],
     description: "Computer Science & Engineering Department building." 
   },
 
@@ -42,7 +42,7 @@ export const locations: Location[] = [
     coords: [11.3225979, 75.9337476], 
     type: "building", 
     category: "outdoor",
-    tag: ["lecture-hall", "electronics"],
+    tag: ["lecture-hall", "electronics", "Classrooms", "Outdoor"],
     description: "Electrical Lecture Hall Complex, primarily for power systems and electronics classes." 
   },
 
@@ -53,7 +53,7 @@ export const locations: Location[] = [
     coords: [11.3217918, 75.9327887], 
     type: "building", 
     category: "outdoor",
-    tag: ["lecture-hall", "multi-disciplinary"],
+    tag: ["lecture-hall", "multi-disciplinary", "Classrooms", "Outdoor"],
     description: "New Lecture Hall Complex - the primary hub for multi-disciplinary lectures." 
   },
 
@@ -64,7 +64,7 @@ export const locations: Location[] = [
     coords: [11.3215577, 75.9342156], 
     type: "building", 
     category: "outdoor",
-    tag: ["administration", "auditorium"],
+    tag: ["administration", "auditorium", "Faculty", "Outdoor"],
     description: "Administrative headquarters housing the Director's office and main auditorium." 
   },
 
@@ -75,7 +75,7 @@ export const locations: Location[] = [
     coords: [11.3215840, 75.9334955], 
     type: "building", 
     category: "outdoor",
-    tag: ["computing", "lab"],
+    tag: ["computing", "lab", "Labs", "Outdoor"],
     description: "The 24/7 computing hub for all students, housing T1 and T2 terminals." 
   },
 
@@ -86,12 +86,9 @@ export const locations: Location[] = [
     coords: [11.3229687, 75.9343269], 
     type: "lab", 
     category: "outdoor",
-    tag: ["research", "it"],
+    tag: ["research", "it", "Labs", "Outdoor"],
     description: "Specialized laboratory complex for Information Technology and advanced research." 
   },
-
-
-  // --- INDOOR LOCATIONS (CCC) ---
 
   { 
     id: 8, 
@@ -101,7 +98,7 @@ export const locations: Location[] = [
     type: "room", 
     category: "indoor", 
     floor: 1,
-    tag: ["terminal", "lab"],
+    tag: ["terminal", "lab", "Labs", "Indoor"],
     parentLocationId: 6,
     description: "Terminal 1 located on the ground floor of CCC, used for general labs." 
   },
@@ -114,13 +111,10 @@ export const locations: Location[] = [
     type: "room", 
     category: "indoor", 
     floor: 2,
-    tag: ["terminal", "projects"],
+    tag: ["terminal", "projects", "Labs", "Indoor"],
     parentLocationId: 6,
     description: "Terminal 2 located on the first floor of CCC, reserved for senior projects." 
   },
-
-
-  // --- INDOOR LOCATIONS (IT Lab Complex) ---
 
   { 
     id: 10, 
@@ -130,7 +124,7 @@ export const locations: Location[] = [
     type: "room", 
     category: "indoor", 
     floor: 2,
-    tag: ["software", "development"],
+    tag: ["software", "development", "SSL", "Labs", "Indoor"],
     parentLocationId: 7,
     description: "Specialized lab for software engineering, design patterns, and application development." 
   },
@@ -143,7 +137,7 @@ export const locations: Location[] = [
     type: "room", 
     category: "indoor", 
     floor: 3,
-    tag: ["networking", "security"],
+    tag: ["networking", "security", "NSL", "Labs", "Indoor"],
     parentLocationId: 7,
     description: "Advanced lab for network security, routing, and switching protocols." 
   }

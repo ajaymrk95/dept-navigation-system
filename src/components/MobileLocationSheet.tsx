@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import type { Location } from "../data/locations"
 import LocationSearch from "./LocationSearch"
+import { useNavigate } from "react-router-dom"
 
 type Props = {
   locations: Location[]
@@ -16,6 +17,8 @@ export default function MobileLocationSheet({
 
   const sheetRef = useRef<HTMLDivElement>(null)
 
+  const navigate = useNavigate()
+
   const screenHeight = window.innerHeight
 
   const MIN_HEIGHT = 90
@@ -26,6 +29,10 @@ export default function MobileLocationSheet({
 
   const startY = useRef(0)
   const startHeight = useRef(0)
+
+  function goToNavigate() {
+    navigate("/navigate")
+  }
 
   function setSheetHeight(h: number) {
     if (!sheetRef.current) return
@@ -104,25 +111,40 @@ export default function MobileLocationSheet({
 
   return (
     <>
-      {/* Find Location button */}
-      {height <= MIN_HEIGHT && (
+      {/* Top buttons */}
+      <div className="fixed top-4 right-4 z-30">
         <button
-          onClick={openSearch}
-          className="fixed top-4 left-4 z-50 bg-white shadow-md rounded-full px-4 py-2 text-sm font-medium"
+          onClick={goToNavigate}
+          className="bg-[#1a305b] text-[#e9e4d9] shadow-md rounded-md px-4 py-2 text-sm font-semibold active:opacity-80"
         >
-          Find Location
+          Navigate
         </button>
-      )}
+      </div>
+
+      {/* Find Location button — only when sheet closed */}
+      {height <= MIN_HEIGHT && (
+        <div className="fixed top-4 right-32 z-30">
+          <button
+            onClick={openSearch}
+            className="bg-[#1a305b] text-[#e9e4d9] shadow-md rounded-md px-4 py-2 text-sm font-semibold active:opacity-80"
+          >
+            Find Location
+          </button>
+        </div>
+)}
+
+      {/* Bottom Sheet */}
 
       <div
         ref={sheetRef}
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-[#e9e4d9] rounded-t-2xl shadow-xl border-t border-[#d6d1c6]"
         style={{ height }}
       >
 
         {/* Drag Handle */}
+
         <div
-          className="w-16 h-2 bg-gray-300 rounded mx-auto mt-3 mb-4 cursor-grab touch-none"
+          className="w-16 h-2 bg-[#1a305b]/40 rounded mx-auto mt-3 mb-4 cursor-grab touch-none"
           onTouchStart={onTouchStart}
           onMouseDown={onMouseDown}
         />
@@ -136,9 +158,9 @@ export default function MobileLocationSheet({
           />
 
           {selectedLocation && (
-            <div className="mt-5 bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+            <div className="mt-5 bg-white rounded-xl shadow-md border border-[#d6d1c6] overflow-hidden">
 
-              <div className="h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+              <div className="h-48 bg-[#d6d1c6] flex items-center justify-center text-[#1a305b]">
                 Image Placeholder
               </div>
 
@@ -159,7 +181,7 @@ export default function MobileLocationSheet({
                 )}
 
                 {selectedLocation.description && (
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-[#2d3b55]">
                     {selectedLocation.description}
                   </p>
                 )}
