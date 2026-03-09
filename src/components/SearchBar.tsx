@@ -15,25 +15,25 @@ export default function SearchBar({ query, onSearch, onFocus }: Props) {
   }
 
   return (
-    <div className="input-group mb-3">
-  
+    <div className="flex gap-2 mb-3">
+
       <input
         type="text"
-        className="form-control"
+        className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Search location..."
         value={query}
         onChange={handleChange}
         onFocus={onFocus}
       />
-  
+
       <button
         type="button"
-        className="btn btn-primary"
+        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
         onClick={() => navigate("/scan")}
       >
         Scan QR
       </button>
-  
+
     </div>
   )
 }

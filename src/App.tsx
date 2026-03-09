@@ -52,33 +52,33 @@ function Home() {
   }, [location.state])
 
   return (
-    <div className="container mt-5">
-  
-      <h1 className="text-center mb-4">
+    <div className="max-w-2xl mx-auto mt-12 px-4">
+
+      <h1 className="text-3xl font-semibold text-center mb-6">
         Department Navigation
       </h1>
-  
-      <div className="row justify-content-center">
-  
-        <div className="col-md-6">
-  
+
+      <div className="flex justify-center">
+
+        <div className="w-full max-w-xl">
+
           <SearchBar
             query={query}
             onSearch={handleSearch}
             onFocus={() => setLocationSelected(false)}
           />
-  
+
           {!locationSelected && (
             <SearchResults
               results={results}
               onSelect={handleSelect}
             />
           )}
-  
+
         </div>
-  
+
       </div>
-  
+
     </div>
   )
 }

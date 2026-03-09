@@ -8,25 +8,24 @@ interface Props {
 export default function SearchResults({ results, onSelect }: Props) {
 
   return (
-    <ul className="list-group">
-  
+    <ul className="border border-gray-200 rounded-md overflow-hidden">
+
       {results.map((location, index) => (
-  
+
         <li
           key={index}
-          className="list-group-item list-group-item-action"
+          className="px-4 py-3 border-b last:border-b-0 hover:bg-gray-100 cursor-pointer"
           onClick={() => onSelect(location)}
-          style={{ cursor: "pointer" }}
         >
           <strong>{location.name}</strong>
           <br />
-          <small className="text-muted">
+          <small className="text-gray-500">
             Room {location.room} · Floor {location.floor}
           </small>
         </li>
-  
+
       ))}
-  
+
     </ul>
   )
 }
