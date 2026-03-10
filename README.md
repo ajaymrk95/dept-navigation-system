@@ -84,16 +84,6 @@ npm run build
 
 ---
 
-## How Indoor Routing Works
-
-1. `buildGraph` walks every path feature and builds a bidirectional adjacency map keyed by coordinate string (`"lng,lat"`)
-2. A POI name or QR-scanned location is resolved to a graph node via `getPOINode`
-3. `dijkstra` finds the lowest-cost node sequence using Euclidean distance as edge weight
-4. `nodesToLatLngs` converts the result to `[lat, lng]` tuples
-5. A `<Polyline>` renders the route over the floor plan
-
----
-
 ## Roadmap
 
 - [ ] Backend API for persisting admin edits
