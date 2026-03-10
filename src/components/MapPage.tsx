@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import type { Location } from "../data/locations"
 import RoutePanel from "./RoutePanel"
 import MobileLocationSheet from "./MobileLocationSheet"
@@ -12,8 +11,6 @@ import "leaflet/dist/leaflet.css"
 export default function MapPage() {
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
-
-  const navigate = useNavigate()
 
   return (
     <div className="h-screen w-screen relative">
@@ -28,7 +25,7 @@ export default function MapPage() {
 
         <TileLayer
           attribution="© OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
 
         {/* move map when location changes */}
