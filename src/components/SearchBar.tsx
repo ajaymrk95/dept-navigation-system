@@ -7,33 +7,85 @@ interface Props {
 }
 
 export default function SearchBar({ query, onSearch, onFocus }: Props) {
-
   const navigate = useNavigate()
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     onSearch(e.target.value)
   }
 
-  return (
-    <div className="flex gap-2 mb-3">
+  function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
+    e.currentTarget.style.borderColor = "#d4a017"
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(212,160,23,0.15)"
+    onFocus()
+  }
 
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    e.currentTarget.style.borderColor = "#d9d2c7"
+    e.currentTarget.style.boxShadow = "none"
+  }
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: "10px",
+        marginBottom: "12px",
+        fontFamily: "'Georgia', 'Times New Roman', serif",
+      }}
+    >
       <input
         type="text"
-        className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Search location..."
         value={query}
         onChange={handleChange}
-        onFocus={onFocus}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        style={{
+          flex: 1,
+          border: "1px solid #d9d2c7",
+          borderRadius: "8px",
+          padding: "10px 14px",
+          fontSize: "14px",
+          color: "#1a2540",
+          backgroundColor: "#faf8f4",
+          outline: "none",
+          fontFamily: "inherit",
+          letterSpacing: "0.01em",
+          transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+        }}
       />
-
       <button
         type="button"
-        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
         onClick={() => navigate("/scan")}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#d4a017"
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#1a2540"
+        }}
+        onMouseDown={e => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.97)"
+        }}
+        onMouseUp={e => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"
+        }}
+        style={{
+          backgroundColor: "#1a2540",
+          color: "#ffffff",
+          border: "none",
+          borderRadius: "8px",
+          padding: "10px 18px",
+          fontSize: "13px",
+          fontWeight: 600,
+          fontFamily: "inherit",
+          letterSpacing: "0.04em",
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+          transition: "background-color 0.2s ease, transform 0.1s ease",
+        }}
       >
         Scan QR
       </button>
-
     </div>
   )
 }
